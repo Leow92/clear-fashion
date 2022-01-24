@@ -266,6 +266,8 @@ let jacket = blueJacket;
 jacket.favorite = true;
 
 // 1. Log `blueJacket` and `jacket` variables
+console.log(blueJacket);
+console.log(jacket);
 // 2. What do you notice?
 
 blueJacket = {
@@ -276,8 +278,11 @@ blueJacket = {
 
 // 3. Update `jacket` property with `favorite` to true WITHOUT changing blueJacket properties
 
+jacket=Object.assign(blueJacket);
+blueJacket=true;
 
-
+console.log(blueJacket);
+console.log(jacket);
 
 
 /**
