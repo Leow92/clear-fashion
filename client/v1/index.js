@@ -32,8 +32,8 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // I can find on these e-shops
 // 2. Log the variable
 
-
-
+const CHEAPEST_TSHIRT = 'https://www.loom.fr/collections/tous-les-vetements/products/le-t-shirt';
+console.log(CHEAPEST_TSHIRT);
 
 
 /**
@@ -49,11 +49,25 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // 1. Create a variable and assign it the number of products
 // 2. Log the variable
 
+const NUMBER_PROD = marketplace.length;
+console.log(NUMBER_PROD);
+
 
 // 🎯 TODO: Brands name
 // 1. Create a variable and assign it the list of brands name only
 // 2. Log the variable
 // 3. Log how many brands we have
+
+const BRANDS_LIST = [];
+for(let i=0;i<marketplace.length;i++)
+{
+  BRANDS_LIST.push(marketplace[i].brand);
+}
+console.log(BRANDS_LIST);
+console.log(BRANDS_LIST.length);
+
+var BRANDS8UNIQUE = new Set(BRANDS_LIST);
+console.log(BRANDS8UNIQUE.size);
 
 
 // 🎯 TODO: Sort by price
@@ -61,11 +75,25 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // 2. Create a variable and assign it the list of products by price from lowest to highest
 // 3. Log the variable
 
+function compare(a,b)
+{
+  return a.price - b.price;
+}
+
+let sortbyprice = marketplace;
+sortbyprice.sort(compare);
+console.log(sortbyprice);
+
 
 // 🎯 TODO: Sort by date
 // 1. Create a function to sort the marketplace objects by products date
 // 2. Create a variable and assign it the list of products by date from recent to old
 // 3. Log the variable
+
+sortbyprice.sort(function(a,b){
+  return new Date(b.date) - new Date(a.date);
+});
+
 
 
 // 🎯 TODO: Filter a specific price range
@@ -73,12 +101,16 @@ console.log(MY_FAVORITE_BRANDS[0]);
 // 2. Log the list
 
 
+
+
 // 🎯 TODO: Average Basket
 // 1. Determine the average basket of the marketplace
 // 2. Log the average
 
-
-
+const reducer = function(previousPrice, products){
+  return previousPrice + products.price;
+} 
+console.log(marketplace.reduce(reducer,0) / marketplace.length);
 
 
 /**
