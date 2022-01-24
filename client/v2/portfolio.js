@@ -8,6 +8,7 @@ let currentPagination = {};
 // instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
+const selectSort = document.querySelector('#sort-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -123,14 +124,50 @@ document.addEventListener('DOMContentLoaded', async () => {
   render(currentProducts, currentPagination);
 });
 
-/**
- * 
- */
+// Feature1
+/*
+selectPage.addEventListener('change', event => {  
+  fetchProducts(parseInt(event.target.value),currentPagination.pageSize)
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+});
+*/
 
- selectPage.addEventListener('change', event => {
+selectPage.addEventListener('change', event => {  
   fetchProducts(parseInt(event.target.value),currentPagination.pageSize)
     .then(setCurrentProducts)
     .then(() => render(currentProducts, currentPagination));
 });
 
+// Feature2
 
+
+// Feature5
+function sort_by_price(items)
+{
+  return items.sort(function(a,b)
+  {
+      return parseFloat(a.price) - parseFloat(b.price);
+  });
+}
+
+selectSort.addEventListener('change', event => {
+  if (event.target.value = 'price-desc')
+  {
+      fetchProducts(1,currentPagination.count)
+      .then(setCurrentProducts)
+      .then(() => render(sort_by_price(currentProducts).reverse(), currentPagination));
+  }
+  // else if (event.target.value = 'price-asc')
+  // {
+  //     fetchProducts(1,currentPagination.count)
+  //     .then(setCurrentProducts)
+  //     .then(() => render(sort_by_price(currentProducts), currentPagination));
+  // }
+  // else if(event.target.value = 'date-asc')
+  // {
+
+  // }
+  // else if (event.target.value = 'date-desc')
+  // {}
+});
