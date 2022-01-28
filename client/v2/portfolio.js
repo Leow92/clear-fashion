@@ -9,6 +9,7 @@ let currentPagination = {};
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectSort = document.querySelector('#sort-select');
+const selectBrand = document.querySelector('#brand-select');
 const sectionProducts = document.querySelector('#products');
 const spanNbProducts = document.querySelector('#nbProducts');
 
@@ -131,7 +132,20 @@ selectPage.addEventListener('change', event => {
     .then(() => render(currentProducts, currentPagination));
 });
 
-// Feature2
+// Feature2 By brands
+selectBrand.addEventListener('change', event => {
+  if (event.target.value == 'none')
+  {
+    fetchProducts(currentPagination.pageSize, parseInt(event.target.value))
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+  }
+  else{
+    fetchProducts(1, parseInt(event.target.value))
+    .then(setCurrentProducts)
+    .then(() => render(currentProducts, currentPagination));
+  }
+});
 
 
 // Feature5
@@ -144,7 +158,7 @@ function sort_by_price(items)
 }
 
 selectSort.addEventListener('change', event => {
-  if (event.target.value = 'price-desc')
+  if (event.target.value == 'price-desc')
   {
       fetchProducts(1,currentPagination.count)
       .then(setCurrentProducts)
