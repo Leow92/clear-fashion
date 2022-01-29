@@ -150,7 +150,7 @@ selectBrand.addEventListener('click', async (event) => {
 });
 
 
-// Feature5
+// Feature5 Sort By Price
 function sort_by_price(items)
 {
   return items.sort(function(a,b)
@@ -159,23 +159,27 @@ function sort_by_price(items)
   });
 }
 
-selectSort.addEventListener('change', event => {
-  if (event.target.value == 'price-desc')
-  {
-      fetchProducts(1,currentPagination.count)
-      .then(setCurrentProducts)
-      .then(() => render(sort_by_price(currentProducts).reverse(), currentPagination));
+selectSort.addEventListener('click', async(event) => {
+  if (event.target.value == "none"){
+    
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+    setCurrentProducts(products);
+    render(currentProducts, currentPagination);
   }
-  // else if (event.target.value = 'price-asc')
-  // {
-  //     fetchProducts(1,currentPagination.count)
-  //     .then(setCurrentProducts)
-  //     .then(() => render(sort_by_price(currentProducts), currentPagination));
-  // }
-  // else if(event.target.value = 'date-asc')
-  // {
+  if (event.target.value == "price-desc")
+  {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-  // }
-  // else if (event.target.value = 'date-desc')
-  // {}
+    products.result = products.result.filter(product => product.price == event.target.value); //A MODIFIER
+    setCurrentProducts(products);
+    render(sort_by_price(currentProducts).reverse(), currentPagination);
+  }
+  if (event.target.value == "price-asc")
+  {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+
+    products.result = products.result.filter(product => product.price == event.target.value);//A MODIFIER
+    setCurrentProducts(products);
+    render(sort_by_price(currentProducts), currentPagination);
+  }
 });
