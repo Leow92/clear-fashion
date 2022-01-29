@@ -133,17 +133,19 @@ selectPage.addEventListener('change', event => {
 });
 
 // Feature2 By brands
-selectBrand.addEventListener('change', event => {
-  if (event.target.value == 'none')
+selectBrand.addEventListener('click', async (event) => {
+  if (event.target.value == "none")
   {
-    fetchProducts(currentPagination.pageSize, parseInt(event.target.value))
-    .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination));
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+    setCurrentProducts(products);
+    render(currentProducts, currentPagination);
   }
   else{
-    fetchProducts(1, parseInt(event.target.value))
-    .then(setCurrentProducts)
-    .then(() => render(currentProducts, currentPagination));
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+
+    products.result = products.result.filter(product => product.brand == event.target.value);
+    setCurrentProducts(products);
+    render(currentProducts, currentPagination);
   }
 });
 
