@@ -150,12 +150,22 @@ selectBrand.addEventListener('click', async (event) => {
 });
 
 
-// Feature5 Sort By Price
+// Feature5 Sort By Price & Feature6 By Date
 function sort_by_price(items)
 {
   return items.sort(function(a,b)
   {
       return parseFloat(a.price) - parseFloat(b.price);
+  });
+}
+
+function sort_by_date(items)
+{
+  return items.sort(function(a,b)
+  {
+    var date1Updated = a.date.getTime();
+    var date2Updated = b.date.getTime();
+    return date1Updated - date2Updated;
   });
 }
 
@@ -182,5 +192,23 @@ selectSort.addEventListener('click', async(event) => {
     setCurrentProducts(products);
     render(sort_by_price(currentProducts), currentPagination);
   }
+  if (event.target.value == "date-asc")
+  {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+
+    products.result = products.result.filter(product => product.date);
+    setCurrentProducts(products);
+    render(sort_by_date(currentProducts).reverse(), currentPagination);
+  }
+  if (event.target.value == "date-desc")
+  {
+    const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
+
+    products.result = products.result.filter(product => product.date);
+    setCurrentProducts(products);
+    render(sort_by_date(currentProducts), currentPagination);
+  }
 });
+
+
 
