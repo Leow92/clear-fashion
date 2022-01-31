@@ -59,9 +59,11 @@ const renderProducts = products => {
     .map(product => {
       return `
       <div class="product" id=${product.uuid}>
-        <span>${product.brand}</span>
+        <a style="text-transform: uppercase;"> ${product.brand}</a>
         <a href="${product.link}">${product.name}</a>
-        <span>${product.price}</span>
+        <a> ${product.price}</a>
+        <a>€</a>
+        <i>${product.released}</i>
       </div>
     `;
     })
@@ -163,9 +165,8 @@ function sort_by_date(items)
 {
   return items.sort(function(a,b)
   {
-    var date1Updated = a.date.getTime();
-    var date2Updated = b.date.getTime();
-    return date1Updated - date2Updated;
+
+    return new Date(a.released) - new Date(b.released);
   });
 }
 
@@ -196,7 +197,7 @@ selectSort.addEventListener('click', async(event) => {
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.date);
+    products.result = products.result.filter(product => product.released);
     setCurrentProducts(products);
     render(sort_by_date(currentProducts).reverse(), currentPagination);
   }
@@ -204,7 +205,7 @@ selectSort.addEventListener('click', async(event) => {
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.date);
+    products.result = products.result.filter(product => product.released);
     setCurrentProducts(products);
     render(sort_by_date(currentProducts), currentPagination);
   }
