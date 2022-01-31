@@ -170,7 +170,7 @@ selectSort.addEventListener('click', async(event) => {
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.price == event.target.value); //A MODIFIER
+    products.result = products.result.filter(product => product.price);
     setCurrentProducts(products);
     render(sort_by_price(currentProducts).reverse(), currentPagination);
   }
@@ -178,8 +178,9 @@ selectSort.addEventListener('click', async(event) => {
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.price == event.target.value);//A MODIFIER
+    products.result = products.result.filter(product => product.price);
     setCurrentProducts(products);
     render(sort_by_price(currentProducts), currentPagination);
   }
 });
+
