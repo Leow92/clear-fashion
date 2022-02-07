@@ -1,5 +1,5 @@
 /* eslint-disable no-console, no-process-exit */
-const montlimar = require('./sites/montlimar');
+const montlimar = require('./sources/montlimar');
 const fs = require('fs');
 
 async function sandbox (eshop = 'https://www.montlimart.com/toute-la-collection.html?limit=all') {
