@@ -10,10 +10,10 @@ const {'v5': uuidv5} = require('uuid');
 const parse = data => {
   const $ = cheerio.load(data, {'xmlMode': true});
 
-  return $('.product_list grid__item')
+  return $('.product-container')
     .map((i, element) => {
       const link = `https://www.adresse.paris${$(element)
-        .find('.')
+        .find('a')
         .attr('href')}`;
 
       return {
@@ -21,16 +21,16 @@ const parse = data => {
         'brand': 'adresse',
         'price': parseInt(
           $(element)
-            .find('.prixright')
+            .find('.price.product-price')
             .text()
         ),
         'name': $(element)
-          .find('.product-name-container')
+          .find('.product-name-container.versionmob')
           .text()
           .trim()
           .replace(/\s/g, ' '),
         'photo': $(element)
-          .find('.product-image-container')
+          .find('img')
           .attr('src'),
         '_id': uuidv5(link, uuidv5.URL)
       };
