@@ -1,5 +1,5 @@
 /* eslint-disable no-console, no-process-exit */
-const dedicatedbrand = require('./sources/dedicatedbrand');
+const dedicatedbrand = require('./sites/dedicatedbrand');
 
 async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/news') {
   try {
