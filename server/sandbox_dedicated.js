@@ -1,7 +1,7 @@
 /* eslint-disable no-console, no-process-exit */
 const dedicatedbrand = require('./sources/dedicated');
 
-async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/all-men') {
+async function sandbox (eshop = 'https://www.dedicatedbrand.com/en/men/all-men?page=4') {
   try {
     console.log(`🕵️‍♀️  browsing ${eshop} source`);
 

@@ -30,8 +30,8 @@ const parse = data => {
           .trim()
           .replace(/\s/g, ' '),
         'photo': $(element)
-          .find('.img')
-          .attr('src'),
+          .find('img')
+          .attr('data-src'),
         '_id': uuidv5(link, uuidv5.URL)
       };
     })
