@@ -10,10 +10,10 @@ const {'v5': uuidv5} = require('uuid');
 const parse = data => {
   const $ = cheerio.load(data, {'xmlMode': true});
 
-  return $('.product-grid__item')
+  return $('.box.product.product-grid__item')
     .map((i, element) => {
       const link = `https://www.loom.fr${$(element)
-        .find('.product-title a')
+        .find('a')
         .attr('href')}`;
 
       return {
@@ -21,7 +21,7 @@ const parse = data => {
         'brand': 'loom',
         'price': parseInt(
           $(element)
-            .find('.money')
+            .find('.price')
             .text()
         ),
         'name': $(element)
@@ -30,7 +30,7 @@ const parse = data => {
           .trim()
           .replace(/\s/g, ' '),
         'photo': $(element)
-          .find('noscript img.product_card__image')
+          .find('img')
           .attr('src'),
         '_id': uuidv5(link, uuidv5.URL)
       };
