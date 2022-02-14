@@ -2,20 +2,18 @@
 const montlimar = require('./sources/montlimar');
 const fs = require('fs');
 
+var products=[];
 async function sandbox (eshop = 'https://www.montlimart.com/toute-la-collection.html?limit=all') {
   try {
     console.log(`🕵️‍♀️  browsing ${eshop} source`);
 
-    const products = await montlimar.scrape(eshop);
+    products = await montlimar.scrape(eshop);
 
     console.log(products);
     console.log('done');
-    /*
-    var json = JSON.stringify(products);
-    fs.writeFile('Products_Montlimar.json', json, 'utf8', callback);
-    */
+    const data = JSON.stringify(products, null, 2);
+    fs.writeFileSync('products_for_montlimar.json', data);
     process.exit(0);
-    
   } catch (e) {
     console.error(e);
     process.exit(1);
