@@ -15,12 +15,13 @@ const insertProducts = async () => {
         console.error(e)
     }
 }
-/*
-const query = require('./query.txt')
+
+
 const find = async () => {
     try {
         await connect();
         collection = db.collection('products');
+        var query = {price : 9 };
         //const result = collection.insertMany(products);
         const result = await collection.find(query).toArray();
         console.log(result);
@@ -28,7 +29,7 @@ const find = async () => {
       console.error(e);
     }
   };
-*/
+
 const connect = async () => {
     try{
         const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
