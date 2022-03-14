@@ -23,7 +23,7 @@ app.get('/', (request, response) => {
 });
 
 app.get('/products/:id', (request, response) => {
-  var url=request.url
+  var url=request.url;
   var components=url.split("/");
   var res=productsById(components[components.length=1]).then(res => response.send(res));
 });
