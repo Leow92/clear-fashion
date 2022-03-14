@@ -1,7 +1,7 @@
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
-//const {calculateLimitAndOffset, paginate,estimatedDocumentCount}=require('paginate-info')
+//const {calculateLimitAndOffset, paginate} = require('paginate-info');
 const {MongoClient} = require('mongodb');
 const MONGODB_URI = 'mongodb+srv://Leow92:bE3bLbq3mJSjT!J3@cluster0.wnwww.mongodb.net/?retryWrites=true&w=majority';
 const MONGODB_DB_NAME = 'Cluster0';
@@ -28,7 +28,7 @@ app.get('/products/:id', (request, response) => {
   var res=productsById(components[components.length=1]).then(res => response.send(res));
 });
 
-app.get('/search', (request, response) => {
+app.get('/products/search', (request, response) => {
   let brand=request.query.brand;
   let price=request.query.price;
   let limit=request.query.limit;
@@ -53,10 +53,14 @@ const productsById = async(id)=>{
   return products
 }
 
-const searchProducts = async(brand,limitation,page) => {
+const searchProducts = async(brand,price,limitation,page) => {
   let b=[]
   if (brand===undefined) {b=["adresse","dedicated","montlimar"];}
   else {b.push(brand);}
+
+  let v=0
+  if (price===undefined) {v=10000000}
+  else {v.push(price);}
 
   let l=0
   if (limitation===undefined) {l=12;}
