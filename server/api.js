@@ -22,10 +22,16 @@ app.get('/', (request, response) => {
   response.send({'ack': true});
 });
 
+app.get('/products', (request, response) => {
+  //var url=request.url;
+  //var components=url.split("/");
+  var res=allProducts().then(res => response.send(res));
+});
+
 app.get('/products/:id', (request, response) => {
-  var url=request.url;
-  var components=url.split("/");
-  var res=productsById(components[components.length=1]).then(res => response.send(res));
+  var url=request.url; //ok
+  var splitURL=url.split("/").pop();
+  var res=productsById(splitURL).then(res => response.send(res));
 });
 
 app.get('/products/search', (request, response) => {
@@ -47,10 +53,17 @@ console.log(`📡 Running on port ${PORT}`);
 const productsById = async(id)=>{
   await connect();
   collection = db.collection('products');
-
   const products = await collection.find({"_id":id}).toArray();
   console.log(products);
   return products
+}
+
+const allProducts = async()=>{
+  await connect();
+  collection = db.collection('products');
+  const prod = await collection.find().toArray();
+  console.log(prod);
+  return prod
 }
 
 const searchProducts = async(brand,price,limitation,page) => {
@@ -89,7 +102,7 @@ const connect = async () => {
   try{
       const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
       db = client.db(MONGODB_DB_NAME);
-      console.log('Connected')
+      console.log('Connected at MongoDB')
 
   }catch(e){
       console.error(e)
@@ -97,3 +110,4 @@ const connect = async () => {
 }
 
 connect()
+//allProducts()
