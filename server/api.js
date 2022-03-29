@@ -1,10 +1,13 @@
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
+const db = require('./db')
+
+/*
 const {MongoClient} = require('mongodb');
 const MONGODB_URI = 'mongodb+srv://Leow92:bE3bLbq3mJSjT!J3@cluster0.wnwww.mongodb.net/?retryWrites=true&w=majority';
 const MONGODB_DB_NAME = 'Cluster0';
-
+*/
 const PORT = 8092;
 
 const app = express();
@@ -16,10 +19,6 @@ app.use(cors());
 app.use(helmet());
 
 app.options('*', cors());
-
-app.listen(PORT);
-console.log(`📡 Running on port ${PORT}`);
-
 
 app.get('/', (request, response) => {
   response.send({'ack': true});
@@ -55,56 +54,41 @@ app.get('/products/:id', (request, response) => {
 });
 
 const productsById = async(id)=>{
-  await connect();
-  collection = db.collection('products');
-  const products = await collection.find({"_id":id}).toArray();
+  db.getDB()
+  const products = db.find({"_id":id});
   console.log(products);
   return products
 }
 
 const allProducts = async()=>{
-  await connect();
-  collection = db.collection('products');
-  const prod = await collection.find().toArray();
+  db.getDB();
+  const prod = db.find();
   console.log(prod);
   return prod
 }
 
 const searchProducts = async(limitation,brand,price) => {
-  await connect();
-  collection = db.collection('products');
-  console.log("Hello");
-  const count = await collection.find({"brand":brand},{"price":{$lt:price}}).count();
+  db.getDB();
+  const count = db.find({"brand":brand},{"price":{$lt:price}}).count();
   console.log(count);
 
   //const {limit,offset} = calculateLimitAndOffset(page, limitation);
   
-  const products = await collection.find({"brand":brand},{"price":{$lt:price}}).limit(limitation).toArray();
+  const products = db.find({"brand":brand},{"price":{$lt:price}}).limit(limitation);
   console.log(products);
   //const meta = paginate (p, count, products, limitation);
   return(products)
 }
 
 const searchProductsBrands = async(brand) => {
-  await connect();
-  collection = db.collection('products');
-  const count = await collection.find({"brand":brand}).count();
+  db.getDB();
+  const count = db.find({"brand":brand}).count();
   console.log(count);
   const products = await collection.find({"brand":brand}).toArray();
   console.log(products);
   return(products)
 }
 
-const connect = async () => {
-  try{
-      const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
-      db = client.db(MONGODB_DB_NAME);
-      console.log('Connected to MongoDB')
+app.listen(PORT);
 
-  }catch(e){
-      console.error(e)
-  }
-}
-
-connect()
-//allProducts()
+console.log(`📡 Running on port ${PORT}`);
