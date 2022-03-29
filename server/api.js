@@ -18,8 +18,8 @@ app.use(helmet());
 app.options('*', cors());
 
 app.listen(PORT);
-
 console.log(`📡 Running on port ${PORT}`);
+
 
 app.get('/', (request, response) => {
   response.send({'ack': true});
@@ -99,7 +99,7 @@ const connect = async () => {
   try{
       const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
       db = client.db(MONGODB_DB_NAME);
-      console.log('Connected at MongoDB')
+      console.log('Connected to MongoDB')
 
   }catch(e){
       console.error(e)
