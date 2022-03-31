@@ -1,13 +1,16 @@
 const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
-const db = require('./db')
-
-/*
+const {calculateLimitAndOffset, paginate} = require('paginate-info');
+//const db = require('./db');
+//var collection=db.collection('products');
 const {MongoClient} = require('mongodb');
+const fs = require('fs');
+
+const MONGODB_COLLECTION = 'products';
 const MONGODB_URI = 'mongodb+srv://Leow92:bE3bLbq3mJSjT!J3@cluster0.wnwww.mongodb.net/?retryWrites=true&w=majority';
 const MONGODB_DB_NAME = 'Cluster0';
-*/
+
 const PORT = 8092;
 
 const app = express();
@@ -19,6 +22,23 @@ app.use(cors());
 app.use(helmet());
 
 app.options('*', cors());
+
+let db,collection;
+
+const connect = () => {
+   console.log("Trying to connect...");
+   MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true}, (error, client)=>{
+     if(error) {
+       throw error;
+   }
+     db = client.db(MONGODB_DB_NAME);
+     collection = db.collection("products");
+     console.log("Connected to `" + MONGODB_DB_NAME + "`!");
+     app.listen(PORT);
+   });
+};
+
+connect();
 
 app.get('/', (request, response) => {
   response.send({'ack': true});
@@ -34,17 +54,14 @@ app.get('/products/search', (request, response) => {
   var limit=request.query.limit;
   var brand=request.query.brand;
   var price=request.query.price;
-  response.send(request.query);
   limit = parseInt(limit);
   price = parseInt(price);
-  //var page=request.query.page;
-  //var brand = splt[]
+  var page=request.query.page;
   console.log(limit);
   console.log(brand);
   console.log(price);
-  //console.log(page)
-  //var res=searchProductsBrands(brand).then(res => response.send(res));
-  var res=searchProducts(limit,brand,price).then(res => response.send(res));
+  console.log(page);
+  var res = searchProducts(page,limit,brand,price).then(res => response.send(res));
 });
 
 app.get('/products/:id', (request, response) => {
@@ -54,41 +71,23 @@ app.get('/products/:id', (request, response) => {
 });
 
 const productsById = async(id)=>{
-  db.getDB()
-  const products = db.find({"_id":id});
+  const products = await collection.find({"_id":id});
   console.log(products);
   return products
 }
 
 const allProducts = async()=>{
-  db.getDB();
-  const prod = db.find();
+  const prod = await collection.find();
   console.log(prod);
   return prod
 }
 
-const searchProducts = async(limitation,brand,price) => {
-  db.getDB();
-  const count = db.find({"brand":brand},{"price":{$lt:price}}).count();
-  console.log(count);
-
-  //const {limit,offset} = calculateLimitAndOffset(page, limitation);
-  
-  const products = db.find({"brand":brand},{"price":{$lt:price}}).limit(limitation);
-  console.log(products);
-  //const meta = paginate (p, count, products, limitation);
-  return(products)
+const searchProducts = async(page,limit,brand,price) => {
+  let {offset} = calculateLimitAndOffset(page, limit);
+  const count = await collection.find({"brand":brand,'price':{$lt:price}}).count();
+  const products = await collection.find({"brand":brand,'price':{$lt:price}}).skip(offset).limit(limit).toArray();
+  const meta = paginate (page, count, products, limit);
+  return{products,meta}
 }
-
-const searchProductsBrands = async(brand) => {
-  db.getDB();
-  const count = db.find({"brand":brand}).count();
-  console.log(count);
-  const products = await collection.find({"brand":brand}).toArray();
-  console.log(products);
-  return(products)
-}
-
-app.listen(PORT);
 
 console.log(`📡 Running on port ${PORT}`);

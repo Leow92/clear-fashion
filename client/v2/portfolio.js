@@ -15,11 +15,11 @@ const spanNbProducts = document.querySelector('#nbProducts');
 
 /**
  * Set global value
- * @param {Array} result - products to display
+ * @param {Array} products - products to display
  * @param {Object} meta - pagination meta info
  */
-const setCurrentProducts = ({result, meta}) => {
-  currentProducts = result;
+const setCurrentProducts = ({products, meta}) => {
+  currentProducts = products;
   currentPagination = meta;
 };
 
@@ -32,16 +32,11 @@ const setCurrentProducts = ({result, meta}) => {
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
-      `https://server-ashy.vercel.app?page=${page}&size=${size}`
+      `http://localhost:8092/products/search?page=${page}&limit=${size}`
     );
     const body = await response.json();
 
-    if (body.success !== true) {
-      console.error(body);
-      return {currentProducts, currentPagination};
-    }
-
-    return body.data;
+    return body;
   } catch (error) {
     console.error(error);
     return {currentProducts, currentPagination};
@@ -58,12 +53,11 @@ const renderProducts = products => {
   const template = products
     .map(product => {
       return `
-      <div class="product" id=${product.uuid}>
+      <div class="product" id=${product._id}>
         <a style="text-transform: uppercase;"> ${product.brand}</a>
         <a href="${product.link}">${product.name}</a>
         <a> ${product.price}</a>
         <a>€</a>
-        <i>${product.released}</i>
       </div>
     `;
     })
@@ -144,7 +138,7 @@ selectBrand.addEventListener('click', async (event) => {
   else{
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.brand == event.target.value);
+    products.products = products.products.filter(product => product.brand == event.target.value);
     setCurrentProducts(products);
     render(currentProducts, currentPagination);
   }
@@ -159,7 +153,7 @@ function sort_by_price(items)
       return parseFloat(a.price) - parseFloat(b.price);
   });
 }
-
+/*
 function sort_by_date(items)
 {
   return items.sort(function(a,b)
@@ -168,7 +162,7 @@ function sort_by_date(items)
     return new Date(a.released) - new Date(b.released);
   });
 }
-
+*/
 selectSort.addEventListener('click', async(event) => {
   if (event.target.value == "none"){
     
@@ -180,7 +174,7 @@ selectSort.addEventListener('click', async(event) => {
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.price);
+    products.products = products.products.filter(product => product.price);
     setCurrentProducts(products);
     render(sort_by_price(currentProducts).reverse(), currentPagination);
   }
@@ -188,10 +182,11 @@ selectSort.addEventListener('click', async(event) => {
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
-    products.result = products.result.filter(product => product.price);
+    products.products = products.products.filter(product => product.price);
     setCurrentProducts(products);
     render(sort_by_price(currentProducts), currentPagination);
   }
+  /*
   if (event.target.value == "date-asc")
   {
     const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
@@ -208,7 +203,5 @@ selectSort.addEventListener('click', async(event) => {
     setCurrentProducts(products);
     render(sort_by_date(currentProducts), currentPagination);
   }
+  */
 });
-
-
-
