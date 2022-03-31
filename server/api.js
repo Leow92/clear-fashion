@@ -33,12 +33,14 @@ const connect = () => {
    }
      db = client.db(MONGODB_DB_NAME);
      collection = db.collection("products");
-     console.log("Connected to `" + MONGODB_DB_NAME + "`!");
-     app.listen(PORT);
+     
    });
 };
 
 connect();
+
+console.log("Connected to `" + MONGODB_DB_NAME + "`!");
+app.listen(PORT);
 
 app.get('/', (request, response) => {
   response.send({'ack': true});
@@ -48,6 +50,12 @@ app.get('/products', (request, response) => {
   //var url=request.url;
   //var components=url.split("/");
   var res=allProducts().then(res => response.send(res));
+});
+
+app.get('/products/:id', (request, response) => {
+  var url=request.url; //ok
+  var splitURL=url.split("/").pop();
+  var res=productsById(splitURL).then(res => response.send(res));
 });
 
 app.get('/products/search', (request, response) => {
@@ -64,30 +72,27 @@ app.get('/products/search', (request, response) => {
   var res = searchProducts(page,limit,brand,price).then(res => response.send(res));
 });
 
-app.get('/products/:id', (request, response) => {
-  var url=request.url; //ok
-  var splitURL=url.split("/").pop();
-  var res=productsById(splitURL).then(res => response.send(res));
-});
+
 
 const productsById = async(id)=>{
-  const products = await collection.find({"_id":id});
+  await connect();
+  const products = await collection.find({"_id":id}).toArray();
   console.log(products);
   return products
 }
 
 const allProducts = async()=>{
-  const prod = await collection.find();
+  await connect();
+  const prod = await collection.find().toArray();
   console.log(prod);
   return prod
 }
 
 const searchProducts = async(page,limit,brand,price) => {
+  await connect();
   let {offset} = calculateLimitAndOffset(page, limit);
   const count = await collection.find({"brand":brand,'price':{$lt:price}}).count();
   const products = await collection.find({"brand":brand,'price':{$lt:price}}).skip(offset).limit(limit).toArray();
   const meta = paginate (page, count, products, limit);
   return{products,meta}
 }
-
-console.log(`📡 Running on port ${PORT}`);
