@@ -1,26 +1,24 @@
 "use strict";
+
 // Import the dependency.
 const { MongoClient } = require('mongodb');
-const uri = process.env.MONGODB_URI;
+
+const uri = 'mongodb+srv://Leow92:bE3bLbq3mJSjT!J3@cluster0.wnwww.mongodb.net/?retryWrites=true&w=majority';;
+const MONGODB_DB_NAME = 'Cluster0';
 const options = {
    useUnifiedTopology: true,
    useNewUrlParser: true,
 };
+
 let client;
 let clientPromise;
-if (process.env.NODE_ENV === "development") {
-  // In development mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (hot module replacement).
-   if (!global._mongoClientPromise) {
-      client = new MongoClient(uri, options);
-      global._mongoClientPromise = client.connect();
-   }
-   clientPromise = global._mongoClientPromise;
-} else {
-  // In production mode, it's best to not use a global variable.
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect()
-}
+
+
+// In production mode, it's best to not use a global variable.
+client = new MongoClient(uri, options);
+clientPromise = client.connect()
+
+
   // Export a module-scoped MongoClient promise. By doing this in a
   // separate module, the client can be shared across functions.
 module.exports = clientPromise;

@@ -2,8 +2,7 @@ const cors = require('cors');
 const express = require('express');
 const helmet = require('helmet');
 const {calculateLimitAndOffset, paginate} = require('paginate-info');
-//const db = require('./db');
-//var collection=db.collection('products');
+const clientPromise = require('./mongodb-client');
 const {MongoClient} = require('mongodb');
 const fs = require('fs');
 
@@ -24,7 +23,7 @@ app.use(helmet());
 app.options('*', cors());
 
 let db,collection;
-
+/*
 const connect = () => {
    console.log("Trying to connect...");
    MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true}, (error, client)=>{
@@ -37,20 +36,27 @@ const connect = () => {
      app.listen(PORT);
    });
 };
-
-connect();
-
-app.get('/', (request, response) => {
+*/
+app.get('/', async(request, response) => {
+  //connect();
+  client = await clientPromise;
+  collection = await client.db(MONGODB_DB_NAME).collection("products");
   response.send({'ack': true});
 });
 
-app.get('/products', (request, response) => {
+app.get('/products', async(request, response) => {
+  //connect();
+  client = await clientPromise;
+  collection = await client.db(MONGODB_DB_NAME).collection("products");
   //var url=request.url;
   //var components=url.split("/");
   var res=allProducts().then(res => response.send(res));
 });
 
-app.get('/products/search', async (request, response) => {
+app.get('/products/search', async(request, response) => {
+  //connect();
+  client = await clientPromise;
+  collection = await client.db(MONGODB_DB_NAME).collection("products");
   var limit=request.query.limit;
   var brand=request.query.brand;
   var price=request.query.price;
@@ -92,6 +98,7 @@ app.get('/products/search', async (request, response) => {
 });
 
 app.get('/products/:id', (request, response) => {
+  connect();
   var url=request.url; //ok
   var splitURL=url.split("/").pop();
   var res=productsById(splitURL).then(res => response.send(res));

@@ -32,7 +32,7 @@ const setCurrentProducts = ({products, meta}) => {
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
-      `http://localhost:8092/products/search?page=${page}&limit=${size}`
+      `https://server-vert-pi.vercel.app/products/search?page=${page}&limit=${size}`
     );
     const body = await response.json();
 
