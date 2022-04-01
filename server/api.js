@@ -33,14 +33,12 @@ const connect = () => {
    }
      db = client.db(MONGODB_DB_NAME);
      collection = db.collection("products");
-     
+     console.log("Connected to `" + MONGODB_DB_NAME + "`!");
+     app.listen(PORT);
    });
 };
 
 connect();
-
-console.log("Connected to `" + MONGODB_DB_NAME + "`!");
-app.listen(PORT);
 
 app.get('/', (request, response) => {
   response.send({'ack': true});
@@ -52,13 +50,7 @@ app.get('/products', (request, response) => {
   var res=allProducts().then(res => response.send(res));
 });
 
-app.get('/products/:id', (request, response) => {
-  var url=request.url; //ok
-  var splitURL=url.split("/").pop();
-  var res=productsById(splitURL).then(res => response.send(res));
-});
-
-app.get('/products/search', (request, response) => {
+app.get('/products/search', async (request, response) => {
   var limit=request.query.limit;
   var brand=request.query.brand;
   var price=request.query.price;
@@ -69,30 +61,86 @@ app.get('/products/search', (request, response) => {
   console.log(brand);
   console.log(price);
   console.log(page);
-  var res = searchProducts(page,limit,brand,price).then(res => response.send(res));
+  if ("brand" in request.query & !("price" in request.query)){
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find({"brand":brand}).count();
+    const products = await collection.find({"brand":brand}).skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    response.send({products,meta});
+  }
+  else if ("price" in request.query & !("brand" in request.query)){
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find({"price":{$lt:price}}).count();
+    const products = await collection.find({"price":{$lt:price}}).skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    response.send({products,meta});
+  }
+  else if ("brand" in request.query & "price" in request.query){
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find({"brand":brand,'price':{$lt:price}}).count();
+    const products = await collection.find({"brand":brand,'price':{$lt:price}}).skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    response.send({products,meta});
+  }
+  else{
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find().count();
+    const products = await collection.find().skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    response.send({products,meta});
+  }
 });
 
-
+app.get('/products/:id', (request, response) => {
+  var url=request.url; //ok
+  var splitURL=url.split("/").pop();
+  var res=productsById(splitURL).then(res => response.send(res));
+});
 
 const productsById = async(id)=>{
-  await connect();
   const products = await collection.find({"_id":id}).toArray();
   console.log(products);
   return products
 }
 
 const allProducts = async()=>{
-  await connect();
   const prod = await collection.find().toArray();
   console.log(prod);
   return prod
 }
-
+/*
 const searchProducts = async(page,limit,brand,price) => {
-  await connect();
-  let {offset} = calculateLimitAndOffset(page, limit);
-  const count = await collection.find({"brand":brand,'price':{$lt:price}}).count();
-  const products = await collection.find({"brand":brand,'price':{$lt:price}}).skip(offset).limit(limit).toArray();
-  const meta = paginate (page, count, products, limit);
-  return{products,meta}
+  if (brand === "undefined"){
+    await connect();
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find({'price':{$lt:price}}).count();
+    const products = await collection.find({'price':{$lt:price}}).skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    return{products,meta}
+  }
+  if (price === 0){
+    await connect();
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find({"brand":brand}).count();
+    const products = await collection.find({"brand":brand}).skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    return{products,meta}
+  }
+  if (price === 1 & brand === "undef"){
+    await connect();
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find().count();
+    const products = await collection.find().skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    return{products,meta}
+  }
+  else{
+    await connect();
+    let {offset} = calculateLimitAndOffset(page, limit);
+    const count = await collection.find({"brand":brand,'price':{$lt:price}}).count();
+    const products = await collection.find({"brand":brand,'price':{$lt:price}}).skip(offset).limit(limit).toArray();
+    const meta = paginate (page, count, products, limit);
+    return{products,meta}
+  }
 }
+*/
